@@ -1,0 +1,154 @@
+package week1code;
+
+import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
+
+import java.util.Scanner;
+
+/**
+ * This project is based on Assignment 1 for bar graph.
+ *
+ * @author Yeshey Dema (000824243)
+ */
+public class Assignment1 extends Application {
+
+    /**
+     * Start method (use this instead of main).
+     *
+     * @param stage The FX stage to draw on
+     * @throws Exception
+     */
+    @Override
+    public void start(Stage stage) throws Exception {
+        Group root = new Group();
+        Scene scene = new Scene(root);
+        Canvas canvas = new Canvas(600, 600); // Set canvas Size in Pixels
+        stage.setTitle("Assignment1"); // Set window title
+        root.getChildren().add(canvas);
+        stage.setScene(scene);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        Scanner input = new Scanner(System.in);
+
+        //Graph title input
+        System.out.println("Enter title of the graph: ");
+        String title = input.nextLine();
+
+        //Minimum input value
+        System.out.println("Enter a minimum value of your vertical axis: ");
+        int rangeMin = input.nextInt();
+
+        //Maximum input value using do while until the user enters range greater than minimum
+        int rangeMax = 0;
+        do{
+            System.out.println("Enter a maximum value of your vertical axis: ");
+            rangeMax = input.nextInt();
+        }while (rangeMax <= rangeMin);
+
+        //Font style and color for Title
+        gc.setFill(Color.BLACK);
+        gc.setFont(Font.font("Times New Roman", 20));
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText(title, 300, 50);
+
+        //Make 5 horizontal lines in the graph
+        int count = 500;
+        while (count >= 100) {
+            gc.setStroke(Color.MAROON);
+            gc.strokeLine(100, count, 500, count);
+            count -= 100;
+        }
+
+        //Loop to create range difference in the bar graph
+        int difference = 0;
+        int counter = 0;
+        int yRange = 505;       //Initialize y position
+        gc.setStroke(Color.BLACK);
+        for (counter = 0; counter < 5; counter++) {
+            difference = (((rangeMax - rangeMin) / 4) * counter) + rangeMin;
+            gc.fillText(String.valueOf(difference), 70, yRange);
+            yRange -= 100;
+        }
+
+        String label = "X";     //Initialize label to X
+        int xPosition = 130;    //Position spacing for Labels
+        int xSpace = 115;       //Position spacing for Values
+        double value = 0;       //Variable declaration for value input
+
+        //Loop for entering Label name and values until 7 times
+        int cnt = 0;       //Initialize cnt to 0
+        while (cnt < 7) {
+            System.out.println("Enter a Label or X for exit: ");
+            label = input.next();
+
+            //If label entered x break the loop and ignore case sensitive
+            if (label.equalsIgnoreCase("x")) {
+                break;
+            }
+            //Input three letter label using loop
+            while(label.length() >= 4 || label.length() <= 2){
+                System.err.println("Enter three letter label: ");
+                System.out.println("Enter a Label or X for exit: ");
+                label = input.next();
+            }
+
+            //Draw the Label on screen
+            gc.setFill(Color.BLACK);
+            gc.fillText(label, xPosition, 520);
+            xPosition += 55;
+
+            System.out.println("Enter a value for label " + label + ":");
+            value = input.nextDouble();
+
+            //Value input check from the range using loop
+            while (value < rangeMin || value > rangeMax) {
+                System.err.println("Invalid. Not within the range!");
+                System.out.println("Enter a value for label " + label + ":");
+                value = input.nextDouble();
+            }
+
+            //Bar graph calculation
+            double barGraph = ((value - rangeMin) / (rangeMax - rangeMin)) * 400;
+
+            //Height of y-axis calculation
+            double yHeight = 500 - barGraph;
+
+            //Draw the bar graph on screen
+            gc.setFill(Color.MAROON);
+            gc.fillRect(xSpace, yHeight, 30, barGraph);
+            xSpace += 55;
+
+            cnt++; //Count user input
+
+            //User limited to enter 7 times. Graph built to have 7 bars.
+            if (cnt == 7){
+                System.err.println("Graph limitation till 7 entry. Thank you!");
+            }
+
+        }
+
+        //My name display on screen
+        gc.setFill(Color.BLUE);
+        gc.fillText("Yeshey Dema(000824243)", 400, 580);
+
+        //Pause for one second and then display bar chart
+        Thread.sleep(1000);
+        stage.show();
+    }
+
+    /**
+     * The actual main method that launches the app.
+     *
+     * @param args unused
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
